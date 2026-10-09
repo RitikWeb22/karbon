@@ -33,6 +33,11 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response?.status === 405 && window.location.hostname.includes('vercel.app')) {
+      import('sonner').then(({ toast }) => {
+        toast.error('Vercel VITE_API_URL is not set! Go to Vercel Settings -> Environment Variables and set VITE_API_URL to your Render backend URL.');
+      });
+    }
     if (error.response?.status === 401) {
       localStorage.removeItem('karbon_token');
       if (window.location.pathname !== '/auth') {
