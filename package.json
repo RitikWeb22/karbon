@@ -9,6 +9,7 @@
     "dev:client": "cd client && npm run dev",
     "dev": "concurrently -n \"SERVER,CLIENT\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run dev:server\" \"npm run dev:client\"",
     "build": "cd client && npm run build",
+    "start": "cd server && npm start",
     "seed": "cd server && npm run seed"
   },
   "devDependencies": {
