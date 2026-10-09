@@ -55,8 +55,3 @@ npm run dev:server
 # Frontend (Client)
 npm run dev:client
 ```
-
-### 3. One-Click Demo Access
-Open `http://localhost:5174/auth` (or `http://localhost:5173/auth`) and click:
-- **Alex (Lead)**: Workspace Owner (`alex@karbon.dev` / `Password123!`)
-- **Elena (Eng)**: Admin Member (`elena@karbon.dev` / `Password123!`)
