@@ -3,6 +3,10 @@ import { io } from 'socket.io-client';
 let socketInstance = null;
 
 const getSocketServerUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim().length > 0) {
+    return envUrl.trim().replace(/\/$/, '');
+  }
   if (typeof window === 'undefined') return 'http://localhost:5000';
   if (window.location.port === '5173' || window.location.port === '5174') {
     return `http://${window.location.hostname}:5000`;

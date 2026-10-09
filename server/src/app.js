@@ -3,8 +3,14 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import { ENV } from './config/env.js';
 import { errorHandler } from './middlewares/error.middleware.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import authRoutes from './modules/auth/auth.routes.js';
 import workspaceRoutes from './modules/workspaces/workspace.routes.js';
@@ -28,13 +34,10 @@ export const createApp = () => {
 
   app.use(
     cors({
-      origin: [
-        ENV.CLIENT_URL,
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        'http://localhost:5174',
-        'http://127.0.0.1:5174',
-      ],
+      origin: (origin, callback) => {
+        // Allow requests with no origin (curl, mobile, server-to-server) or any frontend origin
+        callback(null, true);
+      },
       credentials: true,
     })
   );
@@ -83,6 +86,18 @@ export const createApp = () => {
   app.use('/api/v1/workspaces/:workspaceId/analytics', analyticsRoutes);
   app.use('/api/v1/workspaces/:workspaceId/billing', billingRoutes);
   app.use('/api/v1/workspaces/:workspaceId/search', searchRoutes);
+
+  // Serve Frontend Static Files in production if client/dist exists
+  const clientDistPath = path.resolve(__dirname, '../../client/dist');
+  if (fs.existsSync(clientDistPath)) {
+    app.use(express.static(clientDistPath));
+    app.get('*', (req, res, next) => {
+      if (req.path.startsWith('/api') || req.path.startsWith('/socket.io')) {
+        return next();
+      }
+      res.sendFile(path.join(clientDistPath, 'index.html'));
+    });
+  }
 
   // Centralized Error Handling
   app.use(errorHandler);
